@@ -73,7 +73,8 @@ public class Problem1
                 System.out.println("the number of days = " + n);
             }
 
-            input = new Float[n];
+            input = new Float[n + 1];
+            input[0] = 0.0f;
 
             if((line = reader.readLine()) != null && !line.isEmpty())
             {
@@ -84,7 +85,7 @@ public class Problem1
                     {
                         for(int i = 0; i < n; i++)
                         {
-                            input[i] = Float.parseFloat(tokens[i]);
+                            input[i + 1] = Float.parseFloat(tokens[i]);
                         }
                     }
                     catch (NumberFormatException e)
@@ -110,9 +111,9 @@ public class Problem1
             if(detailedPrinting)
             {
                 StringBuilder log = new StringBuilder("the stock changes = ");
-                for(Float value : input)
+                for(int i = 1; i <= n; i++)
                 {
-                    log.append(value).append(", ");
+                    log.append(input[i]).append(", ");
                 }
                 log.setLength(log.length() - 2);
                 System.out.println(log);
@@ -152,9 +153,48 @@ public class Problem1
         return input;
     }
 
+    //returns the days to buy and sell gold to profit the most
     private Output solve(Float[] input)
     {
-        return null;
+        //n represents the input size
+        Integer n = input.length;
+
+        //if there is no days, so there is no day to buy and sell and there is no profit as well
+        if(n == 0)
+        {
+            return new Output(0.0f, 0, 0);
+        }
+
+        //initializing the days to buy and sell and the profit of this business
+        Integer buyingDay = 0;
+        Integer sellingDay = 0;
+        Float profit = 0.0f;
+        Integer min = 0;
+
+        //iterating the array from 1 to n, updating the answer
+        for(int i = 1; i < n; i++)
+        {
+            //calculating the accumulative profit
+            input[i] = input[i] + input[i - 1];
+
+            //updating the index of the minimum value
+            if(input[i] < input[min])
+            {
+                min = i;
+            }
+
+            //updating the minimum profit and the days to buy and sell
+            //the profit is made by buying at the lowest value and selling at the current price
+            if(profit < input[i] - input[min])
+            {
+                buyingDay = min;
+                sellingDay = i;
+                profit = input[i] - input[min];
+            }
+        }
+
+        //returning the days to buy and sell gold and the maximum profit which we can earn
+        return new Output(profit, buyingDay, sellingDay);
     }
 
     public void solve()
